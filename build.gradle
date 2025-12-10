@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -25,7 +25,7 @@ loom {
     mixin.defaultRefmapName = "nvidium.refmap.json"
     runs {
         it.configureEach {
-            vmArgs("-Xmx8G", "-XX:+UseZGC", "-Dorg.lwjgl.opengl.debug=true")
+            vmArgs("-Xmx16G")
         }
     }
 }
@@ -52,12 +52,19 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
 }
 
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchmentmc_mappings}@zip")
+    }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API
@@ -66,14 +73,12 @@ dependencies {
     modImplementation(fabricApi.module("fabric-rendering-fluids-v1", project.fabric_version))
     modImplementation(fabricApi.module("fabric-renderer-api-v1", project.fabric_version))
 
-    modImplementation("net.fabricmc.fabric-api:fabric-rendering-data-attachment-v1:0.3.40+73761d2e3b")
     modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_version))
 
-    modImplementation "maven.modrinth:sodium:mc1.21.4-0.6.9-fabric"
+    modImplementation "maven.modrinth:sodium:mc1.21.10-0.7.2-fabric"
 
     //modImplementation "maven.modrinth:c2me-fabric:0.2.0+alpha.10.49+1.19.4"
     //modImplementation "maven.modrinth:chunks-fade-in:v1.0.3-1.19.4"
     //modImplementation "maven.modrinth:immersiveportals:v2.7.3-mc1.19.4"
-    modCompileOnly "maven.modrinth:iris:1.8.8+1.21.4-fabric"
+    modCompileOnly "maven.modrinth:iris:1.9.6+1.21.10-fabric"
 }
-
